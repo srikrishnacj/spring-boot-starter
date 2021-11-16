@@ -51,9 +51,10 @@ oauthresourceserver:
 
 
 ## OAuth2 Rest Template Configuration
-#oauthRestTemplate:
-#  registrations:
-#    registrationId:
-#      clientId: test
-#      clientSecret: test
-#      scope: scope
+oauthresttemplate:
+  registrations:
+    github:
+      clientId: test
+      clientSecret: test
+      scope: scope
+      tokenUri: tokenUri
