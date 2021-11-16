@@ -1,0 +1,28 @@
+# Application Info
+info:
+  app:
+    name: ${APP_NAME}
+    description: ${APP_DESCRIPTION}
+    version: ${POM_VERSION}
+
+
+# Server Config
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# OAuth2 Resource Server Configuration
+oauthresourceserver:
+  enable: false
+  issuer-uri: ""
+  verify-claims:
+    name: value
+  authorityMapping:
+    name: prefix
+  whitelistUrls:
+    - "**/swagger-resources/**"
+    - "/swagger-ui.html"
+    - "/v2/api-docs"
+    - "/v3/api-docs"
+    - "/webjars/**"

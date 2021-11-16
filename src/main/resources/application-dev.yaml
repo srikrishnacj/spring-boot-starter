@@ -1,0 +1,59 @@
+# Application Info
+info:
+  app:
+    name: ${APP_NAME}
+    description: ${APP_DESCRIPTION}
+    version: ${POM_VERSION}
+
+
+# Server Config
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+
+# Application Debug & Logging
+debug:
+  response:
+    includeDebugInfo: true
+    enableGlobalCors: false
+  logging:
+    servlet:
+      request: NONE, BASIC, QUERY_PARAMS, HEADER, BODY
+      response: NONE, BASIC, QUERY_PARAMS, HEADER, BODY
+    restTemplate:
+      request: NONE, BASIC, QUERY_PARAMS, HEADER, BODY
+      response: NONE, BASIC, QUERY_PARAMS, HEADER, BODY
+    springWebDebug: false
+  controller:
+    enableErrorCodesCtrl: true
+    enableHttpStatusCodesCtrl: false
+  actuator:
+    enable: false
+    endpoints: '*'
+
+
+# OAuth2 Resource Server Configuration
+oauthresourceserver:
+  enable: false
+  issuer-uri: "https://login.microsoftonline.com/274e7bcc-09e1-4464-8187-eb991bfcf27e/v2.0"
+  verify-claims:
+    name: value
+  authorityMapping:
+    name: prefix
+  whitelistUrls:
+    - "**/swagger-resources/**"
+    - "/swagger-ui.html"
+    - "/v2/api-docs"
+    - "/v3/api-docs"
+    - "/webjars/**"
+
+
+## OAuth2 Rest Template Configuration
+#oauthRestTemplate:
+#  registrations:
+#    registrationId:
+#      clientId: test
+#      clientSecret: test
+#      scope: scope
