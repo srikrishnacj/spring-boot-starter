@@ -1,7 +1,6 @@
 package in.cjcj.sboa.starter.config;
 
 import in.cjcj.sboa.starter.props.RestTemplateProps;
-import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,8 +47,8 @@ public class RestTemplateConfig {
         Binder binder = Binder.get(environment);
         for (String registrationName : restTemplateProps.getRegistrations().keySet()) {
             String name = REGISTRATION_PREFIX + registrationName;
-            BindResult<ClientRegistration> bindResult = binder.bind(name, ClientRegistration.class);
-            CustomClientRegistration registration = binder.bind("oauthresttemplate.registrations.github", CustomClientRegistration.class).get();
+            CustomClientRegistration registration = binder.bind(name, CustomClientRegistration.class).get();
+            registration.setRegistrationId(name);
             clientRegistrations.add(registration.clientRegistration());
         }
         return new InMemoryClientRegistrationRepository(clientRegistrations);

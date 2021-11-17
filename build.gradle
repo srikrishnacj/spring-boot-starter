@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.5.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'maven-publish'
 }
 
 group = 'com.example'
@@ -18,18 +19,68 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set('springCloudVersion', "2020.0.4")
+
+    set('MAVEN_SERVER', System.getenv("MAVEN_SERVER"))
+    set('MAVEN_USERNAME', System.getenv("MAVEN_USERNAME"))
+    set('MAVEN_PASSWORD', System.getenv("MAVEN_PASSWORD"))
+}
+
 dependencies {
+    // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Spring Other Libs
+    implementation "org.springframework.data:spring-data-commons"
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation "org.springframework.boot:spring-boot-configuration-processor"
 
 
     // OAuth2 Server and OAuth2 Client
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
+
+    // Spring Cache
+    implementation "org.springframework.boot:spring-boot-starter-cache"
+    implementation "com.github.ben-manes.caffeine:caffeine"
+
+
+    // Swagger 3.0
+    implementation "io.springfox:springfox-boot-starter:3.0.0"
+
+
+    // Spring Cloud & Microservices
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+
+    // Utils
+    implementation "com.google.code.gson:gson:2.8.8"
+    implementation "com.fasterxml.uuid:java-uuid-generator:4.0"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+    implementation "commons-beanutils:commons-beanutils:1.9.4"
+    // will allow us to scan through class at runtime and find class that implement annotations
+    implementation group: 'io.github.classgraph', name: 'classgraph', version: '4.8.132'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+bootJar {
+    enabled = false
+    mainClassName = 'NONE'
+}
+
 
 test {
     useJUnitPlatform()
@@ -37,6 +88,86 @@ test {
 
 processResources {
     filesMatching("**/application*.yaml") {
-        expand( project.properties )
+        expand(project.properties)
     }
+}
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = POM_GROUP_ID
+            artifactId = POM_ARTIFACT_ID
+            version = POM_VERSION
+
+            artifact bootJar
+
+            pom {
+                name = 'My Library'
+                description = 'A description of my library'
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username = "publisher"
+                password = "publisher"
+            }
+            allowInsecureProtocol = true
+            url = "$MAVEN_SERVER"
+        }
+    }
+}
+
+
+task lookForArtifacts {
+    group "upload"
+    doLast {
+
+        def pomFileName = "${POM_ARTIFACT_ID}-${POM_VERSION}.pom"
+        def artifactPath = "${POM_GROUP_ID.replace(".", "/")}/${POM_ARTIFACT_ID}/${POM_VERSION}/${pomFileName}"
+        def repositoryUrl = "$MAVEN_SERVER/${artifactPath}"
+
+        println("# searching for existing artifact wit id ${POM_VERSION}")
+        println("")
+
+        if (urlExists(repositoryUrl)) {
+            println("# Existing artifact found")
+            println("")
+            throw new RuntimeException("Artifact with version $POM_VERSION already exist - increase the verion to publish")
+        } else {
+            println("# No existing artifact found. Preceding to publish")
+            println("")
+        }
+    }
+}
+
+def urlExists(String repositoryUrl) {
+    try {
+        def connection = (HttpURLConnection) new URL(repositoryUrl).openConnection()
+
+        connection.setRequestProperty("Authorization", "Basic " + getBase64EncodedCredentials())
+        connection.setConnectTimeout(10000)
+        connection.setReadTimeout(10000)
+        connection.setRequestMethod("HEAD")
+
+        def responseCode = connection.getResponseCode()
+
+        if (responseCode == 401) {
+            throw new RuntimeException("Unauthorized MavenUser user. Please provide valid username and password.")
+        }
+
+        return (200 == responseCode)
+
+    } catch (IOException ignored) {
+        println(ignored)
+        return false
+    }
+}
+
+def getBase64EncodedCredentials() {
+    def s = "$MAVEN_USERNAME" + ":" + "$MAVEN_PASSWORD"
+    return s.bytes.encodeBase64().toString()
 }

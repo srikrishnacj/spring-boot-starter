@@ -50,7 +50,7 @@ oauthresourceserver:
     - "/webjars/**"
 
 
-## OAuth2 Rest Template Configuration
+# OAuth2 Rest Template Configuration
 oauthresttemplate:
   registrations:
     github:
@@ -58,3 +58,14 @@ oauthresttemplate:
       clientSecret: test
       scope: scope
       tokenUri: tokenUri
+
+
+# Cache Config
+caching:
+  enable: false
+  configs:
+    cache-name:
+      eviction: MAXIMUM_SIZE
+      maximumSize: 1
+      expireAfterAccess: 1
+      expireAfterWrite: 1

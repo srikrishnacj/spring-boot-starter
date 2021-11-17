@@ -2,6 +2,7 @@ package in.cjcj.sboa.starter.config;
 
 import lombok.Data;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 
 import java.util.Collections;
 import java.util.Set;
@@ -19,6 +20,7 @@ public class CustomClientRegistration {
                 .withRegistrationId(registrationId)
                 .clientId(clientId)
                 .clientSecret(clientSecret)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .scope(scopes)
                 .tokenUri(tokenUri)
                 .build();

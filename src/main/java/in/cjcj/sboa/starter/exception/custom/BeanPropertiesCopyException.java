@@ -1,0 +1,20 @@
+package in.cjcj.sboa.starter.exception.custom;
+
+import in.cjcj.sboa.starter.errors.CommonResourceErrorCode;
+import in.cjcj.sboa.starter.errors.CustomErrorDetail;
+import in.cjcj.sboa.starter.exception.base.InternalServerException;
+
+/**
+ * Thrown by BeanUtil Exception. All the exceptions by Apache Bean Util while copies properties
+ * values from one bean to another bean are wrapped by this runtime exception
+ */
+public class BeanPropertiesCopyException extends InternalServerException {
+    public BeanPropertiesCopyException() {
+        super(CommonResourceErrorCode.BEAN_ID_COPY_ERROR);
+    }
+
+    public BeanPropertiesCopyException(Object source, Object destination) {
+        super(new CustomErrorDetail(CommonResourceErrorCode.BEAN_ID_COPY_ERROR).developerMsg("" +
+                "Something went wrong while copying bean properties from " + source.getClass().getName() + " to " + destination.getClass().getName()));
+    }
+}
