@@ -5,8 +5,8 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+group = POM_GROUP_ID
+version = POM_VERSION
 sourceCompatibility = '11'
 
 configurations {
@@ -22,9 +22,9 @@ repositories {
 ext {
     set('springCloudVersion', "2020.0.4")
 
-    set('MAVEN_SERVER', System.getenv("MAVEN_SERVER"))
-    set('MAVEN_USERNAME', System.getenv("MAVEN_USERNAME"))
-    set('MAVEN_PASSWORD', System.getenv("MAVEN_PASSWORD"))
+    set('MAVEN_SERVER', System.getenv("MAVEN_SERVER") != null ? System.getenv("MAVEN_SERVER") : project.property('MAVEN_SERVER'))
+    set('MAVEN_USERNAME', System.getenv("MAVEN_USERNAME") != null ? System.getenv("MAVEN_USERNAME") : project.property('MAVEN_USERNAME'))
+    set('MAVEN_PASSWORD', System.getenv("MAVEN_PASSWORD") != null ? System.getenv("MAVEN_PASSWORD") : project.property('MAVEN_PASSWORD'))
 }
 
 dependencies {
@@ -77,7 +77,7 @@ dependencyManagement {
 }
 
 bootJar {
-    enabled = false
+    enabled = true
     mainClassName = 'NONE'
 }
 
@@ -112,11 +112,11 @@ publishing {
     repositories {
         maven {
             credentials {
-                username = "publisher"
-                password = "publisher"
+                username = MAVEN_USERNAME
+                password = MAVEN_PASSWORD
             }
             allowInsecureProtocol = true
-            url = "$MAVEN_SERVER"
+            url = MAVEN_SERVER
         }
     }
 }
