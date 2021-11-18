@@ -22,9 +22,29 @@ repositories {
 ext {
     set('springCloudVersion', "2020.0.4")
 
-    set('MAVEN_SERVER', System.getenv("MAVEN_SERVER") != null ? System.getenv("MAVEN_SERVER") : project.property('MAVEN_SERVER'))
-    set('MAVEN_USERNAME', System.getenv("MAVEN_USERNAME") != null ? System.getenv("MAVEN_USERNAME") : project.property('MAVEN_USERNAME'))
-    set('MAVEN_PASSWORD', System.getenv("MAVEN_PASSWORD") != null ? System.getenv("MAVEN_PASSWORD") : project.property('MAVEN_PASSWORD'))
+    if (System.getenv("MAVEN_SERVER") != null) {
+        set('MAVEN_SERVER', System.getenv("MAVEN_SERVER"))
+    } else if (project.hasProperty('MAVEN_SERVER')) {
+        set('MAVEN_SERVER', project.property("MAVEN_SERVER"))
+    } else {
+        set('MAVEN_SERVER', "")
+    }
+
+    if (System.getenv("MAVEN_USERNAME") != null) {
+        set('MAVEN_USERNAME', System.getenv("MAVEN_USERNAME"))
+    } else if (project.hasProperty('MAVEN_USERNAME')) {
+        set('MAVEN_USERNAME', project.property("MAVEN_USERNAME"))
+    } else {
+        set('MAVEN_USERNAME', "")
+    }
+
+    if (System.getenv("MAVEN_PASSWORD") != null) {
+        set('MAVEN_PASSWORD', System.getenv("MAVEN_PASSWORD"))
+    } else if (project.hasProperty('MAVEN_PASSWORD')) {
+        set('MAVEN_PASSWORD', project.property("MAVEN_PASSWORD"))
+    } else {
+        set('MAVEN_PASSWORD', "")
+    }
 }
 
 dependencies {
